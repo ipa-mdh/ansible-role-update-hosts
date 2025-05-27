@@ -1,4 +1,4 @@
-# Ansible Role: manage_hosts
+# Ansible Role: update hosts
 
 This Ansible role manages entries in `/etc/hosts` using a clean, dedicated block. It allows you to associate multiple domain names with specific IP addresses and ensures idempotent configuration via `blockinfile`.
 
