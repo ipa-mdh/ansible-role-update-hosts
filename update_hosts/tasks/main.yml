@@ -1,0 +1,16 @@
+---
+# tasks file for update_hosts
+- name: Generate hosts block content
+  set_fact:
+    hosts_block_lines: |
+      {% for entry in hosts_entries %}
+      {{ entry.ip }} {{ entry.names | join(' ') }}
+      {% endfor %}
+
+- name: Manage custom host entries block in /etc/hosts
+  become: true
+  blockinfile:
+    path: /etc/hosts
+    marker: "# {mark} ANSIBLE MANAGED BLOCK: custom hosts"
+    block: "{{ hosts_block_lines | trim }}"
+    create: yes

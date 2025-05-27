@@ -1,0 +1,7 @@
+---
+# defaults file for update_hosts
+hosts_entries:
+  - ip: "127.0.0.1"
+    names: ["local.dev", "api.local", "admin.local"]
+  - ip: "192.168.1.10"
+    names: ["server.local", "db.local"]
