@@ -1,38 +1,81 @@
-Role Name
-=========
+# Ansible Role: manage_hosts
 
-A brief description of the role goes here.
+This Ansible role manages entries in `/etc/hosts` using a clean, dedicated block. It allows you to associate multiple domain names with specific IP addresses and ensures idempotent configuration via `blockinfile`.
 
-Requirements
-------------
+## ✅ Features
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+- Adds multiple domain names per IP address.
+- Uses a clearly marked block in `/etc/hosts` (`# BEGIN/END ANSIBLE MANAGED BLOCK`).
+- Safe for repeated use (idempotent).
+- Preserves unrelated system or manual `/etc/hosts` entries.
 
-Role Variables
---------------
+## 🧰 Role Variables
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+Define the IP-to-host mappings in your playbook or inventory:
 
-Dependencies
-------------
+```yaml
+hosts_entries:
+  - ip: "127.0.0.1"
+    names: ["local.dev", "api.local", "admin.local"]
+  - ip: "192.168.1.10"
+    names: ["server.local", "db.local"]
+````
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+Each entry must include:
 
-Example Playbook
-----------------
+* `ip`: the IP address.
+* `names`: a list of hostnames or domain aliases for that IP.
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+## 📦 Example Usage
 
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+### Directory layout
 
-License
--------
+```yaml
+your_playbook.yml
+roles/
+└── manage_hosts/
+    ├── tasks/
+    │   └── main.yml
+    └── defaults/
+        └── main.yml
+```
 
-BSD
+### Minimal Playbook
 
-Author Information
-------------------
+```yaml
+- name: Add custom host entries
+  hosts: localhost
+  become: true
+  roles:
+    - role: manage_hosts
+```
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+## 📝 Resulting `/etc/hosts` Block
+
+```txt
+# BEGIN ANSIBLE MANAGED BLOCK: custom hosts
+127.0.0.1 local.dev api.local admin.local
+192.168.1.10 server.local db.local
+# END ANSIBLE MANAGED BLOCK: custom hosts
+```
+
+## 🧪 Testing
+
+Run the role locally using:
+
+```bash
+ansible-playbook -i localhost, -c local your_playbook.yml
+```
+
+## 🔐 Notes
+
+* The role requires `become: true` to write to `/etc/hosts`.
+* Existing entries outside the block are left untouched.
+
+## 🪛 License
+
+MIT
+
+## ✍️ Author
+
+Created by Max Daiber-Huppert with ❤️ via ChatGPT
